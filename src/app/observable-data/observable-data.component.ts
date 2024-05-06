@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ObservableDataService } from '../observable-data.service';
-import { Observable, map } from 'rxjs';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-observable-data',
@@ -10,20 +10,35 @@ import { Observable, map } from 'rxjs';
   templateUrl: './observable-data.component.html',
   styleUrl: './observable-data.component.css',
 })
-export class ObservableDataComponent implements OnInit {
+export class ObservableDataComponent implements OnInit, OnDestroy {
+  doubleValuesSub!: Subscription;
+  filterEvenValuesSub!: Subscription;
+  sumOfAllValuesSub!: Subscription;
+
   constructor(private observableDataService: ObservableDataService) {}
 
   ngOnInit() {
-    this.observableDataService.doubleValues().subscribe((result) => {
-      console.log('Double values:', result);
-    });
+    this.doubleValuesSub = this.observableDataService
+      .doubleValues()
+      .subscribe((result) => {
+        console.log('Double values:', result);
+      });
 
-    this.observableDataService.filterEvenValues().subscribe((result) => {
-      console.log('Even values:', result);
-    });
+    this.filterEvenValuesSub = this.observableDataService
+      .filterEvenValues()
+      .subscribe((result) => {
+        console.log('Even values:', result);
+      });
 
-    this.observableDataService.sumOfAllValues().subscribe((result) => {
-      console.log('Sum of all values:', result);
-    });
+    this.sumOfAllValuesSub = this.observableDataService
+      .sumOfAllValues()
+      .subscribe((result) => {
+        console.log('Sum of all values:', result);
+      });
+  }
+  ngOnDestroy(): void {
+    this.doubleValuesSub?.unsubscribe();
+    this.filterEvenValuesSub?.unsubscribe();
+    this.sumOfAllValuesSub?.unsubscribe();
   }
 }
